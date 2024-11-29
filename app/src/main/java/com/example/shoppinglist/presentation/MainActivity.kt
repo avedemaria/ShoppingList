@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputLayout
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         swipeElement()
 
-        addItemButton = findViewById(R.id.buttonAddShopItem)
+        initFields()
 
         addItemButton.setOnClickListener {
             val intent = ShopItemActivity.newIntentAddItem(this)
@@ -108,6 +109,10 @@ class MainActivity : AppCompatActivity() {
         }
         val itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
+
+    private fun initFields () {
+        addItemButton = findViewById(R.id.buttonAddShopItem)
     }
 
 }
