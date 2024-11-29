@@ -29,7 +29,6 @@ object ShopListRepositoryImpl : ShopListRepository {
     }
 
     override fun getShopItemList(): LiveData<List<ShopItem>> {
-        updateList()
         Log.d("ShopListRepository", "$shopListLD")
         Log.d("ShopListrepositoryImpl", "$shopList")
         return shopListLD
