@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,12 +15,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglist.R
 import com.example.shoppinglist.domain.ShopItem
+import com.example.shoppinglist.presentation.ShopItemActivity.Companion
 import com.google.android.material.textfield.TextInputLayout
 
-class ShopItemFragment(
-    private val screenMode: String = MODE_UNKNOWN,
-    private val shopItemId: Int = ShopItem.UNDEFINED_ID
-) : Fragment() {
+class ShopItemFragment() : Fragment() {
 
     private lateinit var saveButton: Button
     private lateinit var tilName: TextInputLayout
@@ -28,6 +27,14 @@ class ShopItemFragment(
     private lateinit var etCount: EditText
     private lateinit var viewModel: ShopItemViewModel
 
+    private var screenMode: String = MODE_UNKNOWN
+    private var shopItemId: Int = ShopItem.UNDEFINED_ID
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        parseParams()
+    }
 
     override fun onCreateView(          //метод нужен для того чтобы из макета создать вью
         inflater: LayoutInflater,
@@ -44,7 +51,7 @@ class ShopItemFragment(
         savedInstanceState: Bundle?
     ) {                                                                        //вызывается когда вью точно будет создана, до вызова этого метода с вью нельзя работать
         super.onViewCreated(view, savedInstanceState)
-        parseParams()
+
         viewModel = ViewModelProvider(this).get(ShopItemViewModel::class.java)
         initFields(view)
         addTextChangeListeners()
@@ -138,13 +145,24 @@ class ShopItemFragment(
 
 
     private fun parseParams() {
-        if (screenMode != MODE_EDIT && screenMode != MODE_ADD) {
-            throw RuntimeException("Param screen mode is absent")
-        }
+        val args = requireArguments()
 
-        if (screenMode == MODE_EDIT && shopItemId == ShopItem.UNDEFINED_ID) {
-            throw RuntimeException("Param shopItemId is absent")
-        }
+            if (!args.containsKey(EXTRA_SCREEN_MODE)) {                 //если в фрагмент не передан ключ для режимов то выдаем ошибку, чтобы разрабы знали что исправлять
+                throw RuntimeException("Param screen mode is absent")
+            }
+
+            val mode = args.getString(EXTRA_SCREEN_MODE)        //если ключ есть проверяем есть ли нужные нам режимы
+            if (mode != MODE_EDIT && mode !=MODE_ADD) {
+                throw RuntimeException("Unknown screen mode $mode")
+            }
+
+            screenMode = mode
+
+            if (screenMode == MODE_EDIT) {
+                if (!args.containsKey(EXTRA_ID_ITEM))
+                    throw RuntimeException("Param shopItemId is absent")
+            }
+            shopItemId = args.getInt(EXTRA_ID_ITEM, ShopItem.UNDEFINED_ID)
 
     }
 
@@ -166,35 +184,23 @@ class ShopItemFragment(
 
 
         fun newInstanceAddItem(): ShopItemFragment {
-            return ShopItemFragment(MODE_ADD)
+            return ShopItemFragment().apply {
+                arguments = Bundle().apply {                   //передаем значения в Bundle через agruments
+                    putString(EXTRA_SCREEN_MODE, MODE_ADD)
+                }
+            }
         }
 
         fun newInstanceEditItem(shopItemId: Int): ShopItemFragment {
-            return ShopItemFragment(MODE_EDIT, shopItemId)
-        }
 
-
-        fun newIntentAddItem(context: Context): Intent {
-            val intent = Intent(
-                context,
-                ShopItemActivity::class.java
-            )//когда добавляем заметку хотим получить в данной активити реализацию добавления из вьюмодели
-            //здесь передаем нужное название для использования в when
-            intent.putExtra(EXTRA_SCREEN_MODE, MODE_ADD)
-            return intent
-        }
-
-        fun newIntentEditItem(context: Context, id: Int): Intent {
-            val intent = Intent(
-                context,
-                ShopItemActivity::class.java
-            )     //когда редактируем заметку передаем айди сущ заметки + нужное название для when
-            intent.putExtra(EXTRA_SCREEN_MODE, MODE_EDIT)
-            intent.putExtra(EXTRA_ID_ITEM, id)
-            return intent
+            return ShopItemFragment().apply {
+                arguments = Bundle().apply {
+                    putString(EXTRA_SCREEN_MODE, MODE_EDIT)
+                    putInt(EXTRA_ID_ITEM, shopItemId)
+                }
+            }
         }
     }
-
 
 }
 
