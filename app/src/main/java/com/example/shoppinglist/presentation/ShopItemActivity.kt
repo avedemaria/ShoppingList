@@ -18,16 +18,16 @@ import com.example.shoppinglist.domain.ShopItem
 import com.google.android.material.textfield.TextInputLayout
 
 class ShopItemActivity : AppCompatActivity() {
-//
+
 //    private lateinit var saveButton: Button
 //    private lateinit var tilName: TextInputLayout
 //    private lateinit var tilCount: TextInputLayout
 //    private lateinit var etName: EditText
 //    private lateinit var etCount: EditText
 //    private lateinit var viewModel: ShopItemViewModel
-//
-//    private var screenMode = MODE_UNKNOWN
-//    private var shopItemId = ShopItem.UNDEFINED_ID
+
+    private var screenMode = MODE_UNKNOWN
+    private var shopItemId = ShopItem.UNDEFINED_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,20 +38,18 @@ class ShopItemActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-//        parseIntent()
-//        viewModel = ViewModelProvider(this).get(ShopItemViewModel::class.java)
-//        initFields()
-//
-//        addTextChangeListeners()
-//
-//
-//        when (screenMode) {
-//            MODE_EDIT -> launchEditMode()
-//            MODE_ADD -> launchAddMode()
-//        }
-//
-//
-//        observeViewModel()
+        parseIntent()
+
+
+        val fragment = when (screenMode) {
+            MODE_EDIT -> ShopItemFragment.newInstanceEditItem(shopItemId)
+            MODE_ADD -> ShopItemFragment.newInstanceAddItem()
+            else -> throw RuntimeException("Unknown screen mode $screenMode")
+        }
+
+        supportFragmentManager.beginTransaction()         //установка фрагмента в контейнер
+            .add(R.id.shopItemContainer, fragment)
+            .commit()
 
 
     }
@@ -132,26 +130,25 @@ class ShopItemActivity : AppCompatActivity() {
 //    }
 
 
+    private fun parseIntent() {
+        if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {                 //если в активити не передан ключ для режимов то выдаем ошибку, чтобы разрабы знали что исправлять
+            throw RuntimeException("Param screen mode is absent")
+        }
 
+        val mode =
+            intent.getStringExtra(EXTRA_SCREEN_MODE)        //если ключ есть проверяем есть ли нужные нам режимы
+        if (mode != MODE_EDIT && mode != MODE_ADD) {
+            throw RuntimeException("Unknown screen mode $mode")
+        }
 
-//    private fun parseIntent() {
-//        if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {                 //если в активити не передан ключ для режимов то выдаем ошибку, чтобы разрабы знали что исправлять
-//            throw RuntimeException("Param screen mode is absent")
-//        }
-//
-//        val mode = intent.getStringExtra(EXTRA_SCREEN_MODE)        //если ключ есть проверяем есть ли нужные нам режимы
-//        if (mode != MODE_EDIT && mode != MODE_ADD) {
-//            throw RuntimeException("Unknown screen mode $mode")
-//        }
-//
-//        screenMode = mode                                           //
-//
-//        if (screenMode == MODE_EDIT) {
-//            if (!intent.hasExtra(EXTRA_ID_ITEM))
-//                throw RuntimeException("Param shopItemId is absent")
-//        }
-//        shopItemId = intent.getIntExtra(EXTRA_ID_ITEM, ShopItem.UNDEFINED_ID)
-//    }
+        screenMode = mode                                           //
+
+        if (screenMode == MODE_EDIT) {
+            if (!intent.hasExtra(EXTRA_ID_ITEM))
+                throw RuntimeException("Param shopItemId is absent")
+        }
+        shopItemId = intent.getIntExtra(EXTRA_ID_ITEM, ShopItem.UNDEFINED_ID)
+    }
 //
 //    private fun initFields() {
 //        saveButton = findViewById(R.id.save_button)

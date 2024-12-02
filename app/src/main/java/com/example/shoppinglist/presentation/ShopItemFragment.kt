@@ -101,7 +101,7 @@ class ShopItemFragment(
         }
 
         viewModel.isScreenClosed.observe(viewLifecycleOwner) {
-            finish()
+            activity?.onBackPressedDispatcher?.onBackPressed()
         }
     }
 
@@ -138,7 +138,7 @@ class ShopItemFragment(
 
 
     private fun parseParams() {
-        if (screenMode!= MODE_EDIT && screenMode!= MODE_ADD) {
+        if (screenMode != MODE_EDIT && screenMode != MODE_ADD) {
             throw RuntimeException("Param screen mode is absent")
         }
 
@@ -163,6 +163,15 @@ class ShopItemFragment(
         private const val MODE_EDIT = "edit_mode"
         private const val MODE_UNKNOWN = ""
         private const val EXTRA_ID_ITEM = "item_id"
+
+
+        fun newInstanceAddItem(): ShopItemFragment {
+            return ShopItemFragment(MODE_ADD)
+        }
+
+        fun newInstanceEditItem(shopItemId: Int): ShopItemFragment {
+            return ShopItemFragment(MODE_EDIT, shopItemId)
+        }
 
 
         fun newIntentAddItem(context: Context): Intent {
