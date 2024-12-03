@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +33,7 @@ class ShopItemFragment() : Fragment() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("SHOPITEMFRAGMENT", "onCreate")
         super.onCreate(savedInstanceState)
         parseParams()
     }
@@ -145,6 +147,7 @@ class ShopItemFragment() : Fragment() {
 
 
     private fun parseParams() {
+
         val args = requireArguments()
 
             if (!args.containsKey(EXTRA_SCREEN_MODE)) {                 //если в фрагмент не передан ключ для режимов то выдаем ошибку, чтобы разрабы знали что исправлять

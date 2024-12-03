@@ -19,12 +19,6 @@ import com.google.android.material.textfield.TextInputLayout
 
 class ShopItemActivity : AppCompatActivity() {
 
-//    private lateinit var saveButton: Button
-//    private lateinit var tilName: TextInputLayout
-//    private lateinit var tilCount: TextInputLayout
-//    private lateinit var etName: EditText
-//    private lateinit var etCount: EditText
-//    private lateinit var viewModel: ShopItemViewModel
 
     private var screenMode = MODE_UNKNOWN
     private var shopItemId = ShopItem.UNDEFINED_ID
@@ -41,93 +35,21 @@ class ShopItemActivity : AppCompatActivity() {
         parseIntent()
 
 
-        val fragment = when (screenMode) {
-            MODE_EDIT -> ShopItemFragment.newInstanceEditItem(shopItemId)
-            MODE_ADD -> ShopItemFragment.newInstanceAddItem()
-            else -> throw RuntimeException("Unknown screen mode $screenMode")
+        if (savedInstanceState == null) {  //если фрагмент не был создан
+            val fragment = when (screenMode) {
+                MODE_EDIT -> ShopItemFragment.newInstanceEditItem(shopItemId)
+                MODE_ADD -> ShopItemFragment.newInstanceAddItem()
+                else -> throw RuntimeException("Unknown screen mode $screenMode")
+            }
+
+
+            supportFragmentManager.beginTransaction()         //установка фрагмента в контейнер
+                .replace(R.id.shopItemContainer, fragment)
+                .commit()
+
         }
 
-        supportFragmentManager.beginTransaction()         //установка фрагмента в контейнер
-            .add(R.id.shopItemContainer, fragment)
-            .commit()
-
-
     }
-
-//    private fun launchEditMode() {
-//        viewModel.getShopItem(shopItemId)
-//        viewModel.shopItemLD.observe(this) {
-//            etName.setText(it.name)
-//            etCount.setText(it.count.toString())
-//        }
-//
-//        saveButton.setOnClickListener {
-//            viewModel.editShopItem(etName.text?.toString(), etCount.text?.toString())
-//        }
-//    }
-//
-//    private fun launchAddMode() {
-//        saveButton.setOnClickListener {
-//            viewModel.addShopItem(etName.text?.toString(), etCount.text?.toString())
-//        }
-//    }
-//
-//
-//    private fun observeViewModel() {
-//
-//        viewModel.isErrorInputName.observe(this) {
-//            val message = if (it) {
-//                getString(R.string.error_invalid_name)
-//            } else {
-//                null
-//            }
-//            tilName.error = message
-//        }
-//
-//        viewModel.isErrorInputCount.observe(this) {
-//            val message = if (it) {
-//                getString(R.string.error_invalid_count)
-//            } else {
-//                null
-//            }
-//            tilCount.error = message
-//        }
-//
-//        viewModel.isScreenClosed.observe(this) {
-//            finish()
-//        }
-//    }
-//
-//    private fun addTextChangeListeners() {
-//        etName.addTextChangedListener(object : TextWatcher {
-//            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//
-//            }
-//
-//            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                viewModel.resetErrorInputName()
-//            }
-//
-//            override fun afterTextChanged(p0: Editable?) {
-//
-//            }
-//        })
-//
-//
-//        etCount.addTextChangedListener(object : TextWatcher {
-//            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//
-//            }
-//
-//            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                viewModel.resetErrorInputCount()
-//            }
-//
-//            override fun afterTextChanged(p0: Editable?) {
-//
-//            }
-//        })
-//    }
 
 
     private fun parseIntent() {
@@ -149,15 +71,6 @@ class ShopItemActivity : AppCompatActivity() {
         }
         shopItemId = intent.getIntExtra(EXTRA_ID_ITEM, ShopItem.UNDEFINED_ID)
     }
-//
-//    private fun initFields() {
-//        saveButton = findViewById(R.id.save_button)
-//        tilName = findViewById(R.id.til_name)
-//        tilCount = findViewById(R.id.til_count)
-//        etName = findViewById(R.id.et_name)
-//        etCount = findViewById(R.id.et_count)
-//    }
-//}
 
     companion object {
 
@@ -171,9 +84,9 @@ class ShopItemActivity : AppCompatActivity() {
         fun newIntentAddItem(context: Context): Intent {
             val intent = Intent(
                 context,
-                ShopItemActivity::class.java
-            )//когда добавляем заметку хотим получить в данной активити реализацию добавления из вьюмодели
-            //здесь передаем нужное название для использования в when
+                ShopItemActivity::class.java//когда добавляем заметку хотим получить в данной активити реализацию добавления из вьюмодели
+                //здесь передаем нужное название для использования в when
+            )
             intent.putExtra(EXTRA_SCREEN_MODE, MODE_ADD)
             return intent
         }

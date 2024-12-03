@@ -5,6 +5,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -19,15 +20,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var shopListAdapter: ShopListAdapter
     private lateinit var addItemButton: FloatingActionButton
 
+    private var shopItemContainer: FragmentContainerView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+        shopItemContainer = findViewById(R.id.shop_item_container)
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+//        if (shopItemContainer != null) {
+//            supportFragmentManager.beginTransaction()
+//                .add(R.id.shop_item_container, ShopItemFragment.newInstanceAddItem()).commit()
+//        }
+
         setUpRecyclerView()
 
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
@@ -43,8 +54,16 @@ class MainActivity : AppCompatActivity() {
         initFields()
 
         addItemButton.setOnClickListener {
-            val intent = ShopItemActivity.newIntentAddItem(this)
-            startActivity(intent)
+            if (shopItemContainer != null) {
+//                supportFragmentManager.popBackStack()
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.shop_item_container, ShopItemFragment.newInstanceAddItem())
+                    .addToBackStack(null)
+                    .commit()
+            } else {
+                val intent = ShopItemActivity.newIntentAddItem(this)
+                startActivity(intent)
+            }
         }
 
 
@@ -77,8 +96,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpClickListener() {
         shopListAdapter.onShopItemClickListener = {
-            val intent = ShopItemActivity.newIntentEditItem(this@MainActivity, it.id)
-            startActivity(intent)
+            if (shopItemContainer != null) {
+                supportFragmentManager.popBackStack()
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.shop_item_container, ShopItemFragment.newInstanceEditItem(it.id))//заменяет фрагмент в стеке на другой, они не наслаиваются друг на друга
+                    .addToBackStack(null) //добавление фрагментов в backstack
+                    .commit()
+            } else {
+                val intent = ShopItemActivity.newIntentEditItem(this@MainActivity, it.id)
+                startActivity(intent)
+            }
         }
     }
 
@@ -111,7 +138,7 @@ class MainActivity : AppCompatActivity() {
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
-    private fun initFields () {
+    private fun initFields() {
         addItemButton = findViewById(R.id.buttonAddShopItem)
     }
 
