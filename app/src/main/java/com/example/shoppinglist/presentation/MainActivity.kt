@@ -1,6 +1,7 @@
 package com.example.shoppinglist.presentation
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -13,7 +14,7 @@ import com.example.shoppinglist.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputLayout
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var recyclerView: RecyclerView
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var addItemButton: FloatingActionButton
 
     private var shopItemContainer: FragmentContainerView? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +57,7 @@ class MainActivity : AppCompatActivity() {
 
         addItemButton.setOnClickListener {
             if (shopItemContainer != null) {
-//                supportFragmentManager.popBackStack()
+                supportFragmentManager.popBackStack()
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.shop_item_container, ShopItemFragment.newInstanceAddItem())
                     .addToBackStack(null)
@@ -69,6 +71,10 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onEditingFinished() {
+        Toast.makeText(this, "Success", Toast.LENGTH_SHORT)
+            .show()
+    }
 
     private fun observeViewModel() {
         viewModel.shopListLD.observe(this, {
@@ -97,9 +103,10 @@ class MainActivity : AppCompatActivity() {
     private fun setUpClickListener() {
         shopListAdapter.onShopItemClickListener = {
             if (shopItemContainer != null) {
+                val fragment = ShopItemFragment.newInstanceEditItem(it.id)
                 supportFragmentManager.popBackStack()
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.shop_item_container, ShopItemFragment.newInstanceEditItem(it.id))//заменяет фрагмент в стеке на другой, они не наслаиваются друг на друга
+                    .replace(R.id.shop_item_container, fragment )//заменяет фрагмент в стеке на другой, они не наслаиваются друг на друга
                     .addToBackStack(null) //добавление фрагментов в backstack
                     .commit()
             } else {

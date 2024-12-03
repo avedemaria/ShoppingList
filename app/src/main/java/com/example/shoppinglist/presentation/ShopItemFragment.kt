@@ -1,12 +1,10 @@
 package com.example.shoppinglist.presentation
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,10 +14,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglist.R
 import com.example.shoppinglist.domain.ShopItem
-import com.example.shoppinglist.presentation.ShopItemActivity.Companion
 import com.google.android.material.textfield.TextInputLayout
 
-class ShopItemFragment() : Fragment() {
+class ShopItemFragment : Fragment() {
 
     private lateinit var saveButton: Button
     private lateinit var tilName: TextInputLayout
@@ -31,6 +28,16 @@ class ShopItemFragment() : Fragment() {
     private var screenMode: String = MODE_UNKNOWN
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
 
+   private lateinit var onEditingFinishedListener: OnEditingFinishedListener
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditingFinishedListener) {
+            onEditingFinishedListener = context
+        } else {
+            throw  RuntimeException("Activity must implement OnEditingFinishedListener")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("SHOPITEMFRAGMENT", "onCreate")
@@ -110,7 +117,7 @@ class ShopItemFragment() : Fragment() {
         }
 
         viewModel.isScreenClosed.observe(viewLifecycleOwner) {
-            activity?.onBackPressedDispatcher?.onBackPressed()
+            onEditingFinishedListener.onEditingFinished()
         }
     }
 
@@ -149,8 +156,7 @@ class ShopItemFragment() : Fragment() {
     private fun parseParams() {
 
         val args = requireArguments()
-
-            if (!args.containsKey(EXTRA_SCREEN_MODE)) {                 //если в фрагмент не передан ключ для режимов то выдаем ошибку, чтобы разрабы знали что исправлять
+        if (!args.containsKey(EXTRA_SCREEN_MODE)) {                 //если в фрагмент не передан ключ для режимов то выдаем ошибку, чтобы разрабы знали что исправлять
                 throw RuntimeException("Param screen mode is absent")
             }
 
@@ -176,6 +182,14 @@ class ShopItemFragment() : Fragment() {
         etName = view.findViewById(R.id.et_name)
         etCount = view.findViewById(R.id.et_count)
     }
+
+
+    interface OnEditingFinishedListener {
+        fun onEditingFinished ()
+    }
+
+
+
 
     companion object {
 
