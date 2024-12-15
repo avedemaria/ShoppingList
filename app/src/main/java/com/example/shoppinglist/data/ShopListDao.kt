@@ -21,5 +21,5 @@ interface ShopListDao {
     fun deleteShopItem(id:Int)
 
     @Query("SELECT * from shop_items WHERE id=:id LIMIT 1")
-    fun getShopItemById (id:Int)
+    fun getShopItemById (id:Int): ShopItemDbModel
 }
