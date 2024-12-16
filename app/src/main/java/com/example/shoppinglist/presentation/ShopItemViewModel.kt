@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.shoppinglist.data.ShopListRepositoryImpl
 import com.example.shoppinglist.domain.AddShopItemUseCase
 import com.example.shoppinglist.domain.EditShopItemUseCase
@@ -37,11 +38,10 @@ class ShopItemViewModel (application: Application): AndroidViewModel(application
     private val _isScreenClosed = MutableLiveData<Boolean>()
     val isScreenClosed: LiveData<Boolean> get() = _isScreenClosed
 
-    private val scope = CoroutineScope(Dispatchers.IO)
 
 
     fun getShopItem(id: Int) {
-        scope.launch {
+        viewModelScope.launch {
             val item = getShopItemByIdUseCase.getShopItemById(id)
             _shopItemLD.value = item
         }
@@ -54,7 +54,7 @@ class ShopItemViewModel (application: Application): AndroidViewModel(application
 
         val fieldValid = validateInput(name, count)
         if (fieldValid) {
-            scope.launch {
+            viewModelScope.launch {
                 val shopItem = ShopItem(name, count, true)
                 addShopItemUseCase.addShopItem(shopItem)
                 _isScreenClosed.value = true
@@ -71,7 +71,7 @@ class ShopItemViewModel (application: Application): AndroidViewModel(application
         val fieldValid = validateInput(name, count)
         if (fieldValid) {
             _shopItemLD.value?.let {
-                scope.launch {
+                viewModelScope.launch {
                     val item = it.copy(name = name, count = count)
                     editShopItemUseCase.editShopItem(item)
                     _isScreenClosed.value = true
@@ -82,10 +82,6 @@ class ShopItemViewModel (application: Application): AndroidViewModel(application
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        scope.cancel()
-    }
 
     private fun parseName(name: String?): String {
         return name?.trim() ?: ""

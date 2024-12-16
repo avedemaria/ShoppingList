@@ -26,8 +26,7 @@ abstract class AppDataBase : RoomDatabase() {
                 application,
                 AppDataBase::class.java,
                 DB_NAME
-            ).allowMainThreadQueries()//этот метод позволяет совершать операции на главном потоке и используется только для тестов
-                .build()
+            ).build()
             INSTANCE = db
             return db
 
