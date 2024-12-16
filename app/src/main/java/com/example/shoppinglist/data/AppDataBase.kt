@@ -22,13 +22,15 @@ abstract class AppDataBase : RoomDatabase() {
                     return it
                 }
             }
-            return Room.databaseBuilder(
+            val db =  Room.databaseBuilder(
                 application,
                 AppDataBase::class.java,
                 DB_NAME
-            ).build().also {
-                INSTANCE = it
-            }
+            ).allowMainThreadQueries()//этот метод позволяет совершать операции на главном потоке и используется только для тестов
+                .build()
+            INSTANCE = db
+            return db
+
         }
     }
 

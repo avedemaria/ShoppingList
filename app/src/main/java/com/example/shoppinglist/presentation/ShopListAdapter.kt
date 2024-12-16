@@ -77,12 +77,6 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
         }
     }
 
-//    override fun onViewRecycled(holder: ShopItemViewHolder) {
-//        super.onViewRecycled(holder)
-//        holder.tvItemName.text = ""                  //установка значений по умолчанию
-//        holder.tvItemCount.text = ""
-//    }
-
 
     companion object {
         const val VIEW_TYPE_ENABLED = 100

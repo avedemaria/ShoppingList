@@ -1,6 +1,7 @@
 package com.example.shoppinglist.presentation
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -20,9 +21,8 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var viewModel: MainViewModel
-    private lateinit var recyclerView: RecyclerView
     private lateinit var shopListAdapter: ShopListAdapter
-    private lateinit var addItemButton: FloatingActionButton
+
 
 
 
@@ -38,11 +38,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             insets
         }
 
-
-//        if (shopItemContainer != null) {
-//            supportFragmentManager.beginTransaction()
-//                .add(R.id.shop_item_container, ShopItemFragment.newInstanceAddItem()).commit()
-//        }
 
         setUpRecyclerView()
 
@@ -81,6 +76,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
     private fun observeViewModel() {
         viewModel.shopListLD.observe(this, {
+            Log.d("MainActivity", "Data received: $it")
             shopListAdapter.submitList(it)
         })
     }

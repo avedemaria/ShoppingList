@@ -15,11 +15,11 @@ interface ShopListDao {
     fun getShopItemList(): LiveData<List<ShopItemDbModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)//эта строка означает, что если в нашу таблицу добавится элементс тем же айди, то он перезапишется в таблицу
-    fun addShopItem(shopItemDbModel: ShopItemDbModel)
+    suspend fun addShopItem(shopItemDbModel: ShopItemDbModel)
 
     @Query("DELETE from shop_items WHERE id=:id")
-    fun deleteShopItem(id:Int)
+    suspend fun deleteShopItem(id:Int)
 
     @Query("SELECT * from shop_items WHERE id=:id LIMIT 1")
-    fun getShopItemById (id:Int): ShopItemDbModel
+    suspend fun getShopItemById (id:Int): ShopItemDbModel
 }
