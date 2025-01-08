@@ -55,5 +55,11 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     ksp(libs.room.compiler)
+    //Dagger2
+    implementation(libs.dagger2)
+//Dagger2 кодогенератор
+    ksp(libs.dagger2.compiler)
+//Dagger2 аннотации
+    ksp(libs.dagger2.android.processor)
 
 }

@@ -11,12 +11,22 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglist.databinding.FragmentShopItemBinding
 import com.example.shoppinglist.domain.ShopItem
+import javax.inject.Inject
 
 class ShopItemFragment : Fragment() {
 
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
     private val viewModel by lazy {
-        ViewModelProvider(this).get(ShopItemViewModel::class.java)
+        ViewModelProvider(this, viewModelFactory).get(ShopItemViewModel::class)
     }
+
+    private val component by lazy {
+        (requireActivity().application as ShoppingListApp).component
+    }
+
 
     private var _binding: FragmentShopItemBinding? = null
     private val binding: FragmentShopItemBinding
@@ -29,6 +39,9 @@ class ShopItemFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+
+        component.inject(this)
+
         if (context is OnEditingFinishedListener) {
             onEditingFinishedListener = context
         } else {

@@ -15,15 +15,28 @@ import com.example.shoppinglist.R
 import com.example.shoppinglist.databinding.ActivityMainBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputLayout
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
+    private val viewModel by lazy {
+        ViewModelProvider(this, viewModelFactory).get(MainViewModel::class)
+    }
+
+
+    private val component by lazy {
+        (application as ShoppingListApp).component
+    }
+
+
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var viewModel: MainViewModel
+
     private lateinit var shopListAdapter: ShopListAdapter
-
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,12 +51,12 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             insets
         }
 
+        component.inject(this)
+
 
         setUpRecyclerView()
 
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         observeViewModel()
-
 
         setUpLongClickListener()
 
@@ -104,7 +117,10 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                 val fragment = ShopItemFragment.newInstanceEditItem(it.id)
                 supportFragmentManager.popBackStack()
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.shop_item_container, fragment )//заменяет фрагмент в стеке на другой, они не наслаиваются друг на друга
+                    .replace(
+                        R.id.shop_item_container,
+                        fragment
+                    )//заменяет фрагмент в стеке на другой, они не наслаиваются друг на друга
                     .addToBackStack(null) //добавление фрагментов в backstack
                     .commit()
             } else {
@@ -142,7 +158,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         val itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(binding.recyclerViewShopList)
     }
-
 
 
 }
