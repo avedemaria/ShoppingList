@@ -1,14 +1,13 @@
 package com.example.shoppinglist.domain
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.flow.Flow
 
 interface ShopListRepository {
 
     suspend fun addShopItem(item: ShopItem)
     suspend fun deleteShopItem(item: ShopItem)
     suspend fun editShopItem(item: ShopItem)
-    fun getShopItemList(): LiveData<List<ShopItem>>
+    fun getShopItemList(): Flow<List<ShopItem>>
     suspend fun getShopItemById(id: Int): ShopItem
 
 }

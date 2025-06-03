@@ -1,36 +1,24 @@
 package com.example.shoppinglist.data.repository
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import com.example.shoppinglist.Di.ApplicationScope
 import com.example.shoppinglist.data.database.ShopListDao
 import com.example.shoppinglist.data.mapper.ShopListMapper
 import com.example.shoppinglist.domain.ShopItem
 import com.example.shoppinglist.domain.ShopListRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-
-@ApplicationScope
 class ShopListRepositoryImpl @Inject constructor(
     private val shopListDao: ShopListDao,
-    private val mapper: ShopListMapper
+    private val mapper: ShopListMapper,
 ) : ShopListRepository {
 
 
-    override fun getShopItemList(): LiveData<List<ShopItem>> {
-        return MediatorLiveData<List<ShopItem>>().apply {
-            addSource(shopListDao.getShopItemList()) {
-                value = mapper.mapListDbModelToListEntity(it)
-            }
+    override fun getShopItemList(): Flow<List<ShopItem>> {
+        return shopListDao.getShopItemList().map { dbList ->
+            mapper.mapListDbModelToListEntity(dbList)
         }
     }
-
-//    override fun getShopItemList(): LiveData<List<ShopItem>> {
-//        return shopListDao.getShopItemList().map {
-//            mapper.mapListDbModelToListEntity(it)
-//        }
-//    }
-
 
     override suspend fun addShopItem(item: ShopItem) {
         shopListDao.addShopItem(mapper.mapEntityToDbModel(item))
@@ -48,6 +36,5 @@ class ShopListRepositoryImpl @Inject constructor(
         val shopItemDbModel = shopListDao.getShopItemById(id)
         return mapper.mapDbModelToEntity(shopItemDbModel)
     }
-
 
 }

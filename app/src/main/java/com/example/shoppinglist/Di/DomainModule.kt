@@ -4,12 +4,16 @@ import com.example.shoppinglist.data.repository.ShopListRepositoryImpl
 import com.example.shoppinglist.domain.ShopListRepository
 import dagger.Binds
 import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 
 @Module
+@InstallIn(SingletonComponent::class)
 interface DomainModule {
 
-    @ApplicationScope
+    @Singleton
     @Binds
     fun bindShopListRepository(impl: ShopListRepositoryImpl): ShopListRepository
 

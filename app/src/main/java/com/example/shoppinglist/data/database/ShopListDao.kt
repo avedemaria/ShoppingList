@@ -5,20 +5,20 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ShopListDao {
 
-
     @Query("SELECT * from shop_items")
-    fun getShopItemList(): LiveData<List<ShopItemDbModel>>
+    fun getShopItemList(): Flow<List<ShopItemDbModel>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)//эта строка означает, что если в нашу таблицу добавится элементс тем же айди, то он перезапишется в таблицу
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addShopItem(shopItemDbModel: ShopItemDbModel)
 
     @Query("DELETE from shop_items WHERE id=:id")
-    suspend fun deleteShopItem(id:Int)
+    suspend fun deleteShopItem(id: Int)
 
     @Query("SELECT * from shop_items WHERE id=:id LIMIT 1")
-    suspend fun getShopItemById (id:Int): ShopItemDbModel
+    suspend fun getShopItemById(id: Int): ShopItemDbModel
 }
