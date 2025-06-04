@@ -24,6 +24,7 @@
 - MVI
 - Clean Architecture (presentation/domain/data)
 - Dependency Injection: Hilt
+- Kotlin Сoroutines, Flow
 
 ### UI и навигация:
 - Jetpack Compose
